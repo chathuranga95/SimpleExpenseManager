@@ -31,9 +31,15 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.MyApplication;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.R;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.ExpenseManager;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.exception.InvalidAccountException;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl.PersistentAccountDAO;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Account;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
 
 import static lk.ac.mrt.cse.dbs.simpleexpensemanager.Constants.EXPENSE_MANAGER;
@@ -68,11 +74,17 @@ public class ManageExpensesFragment extends Fragment implements View.OnClickList
         amount = (EditText) rootView.findViewById(R.id.amount);
         accountSelector = (Spinner) rootView.findViewById(R.id.account_selector);
         currentExpenseManager = (ExpenseManager) getArguments().get(EXPENSE_MANAGER);
-        ArrayAdapter<String> adapter =
-                null;
-        if (currentExpenseManager != null) {
+        ArrayAdapter<String> adapter =  null;
+        if (currentExpenseManager == null) {
+            ArrayList<String> accList = new ArrayList<>();
+            PersistentAccountDAO obj = new PersistentAccountDAO(MyApplication.getAppContext());
+
+            accList.add("123456AA");
+            accList.add("123456BB");
             adapter = new ArrayAdapter<>(this.getActivity(), R.layout.support_simple_spinner_dropdown_item,
-                    currentExpenseManager.getAccountNumbersList());
+                  //  accList);
+                  //currentExpenseManager.getAccountNumbersList());
+            obj.getAccountNumbersList());
         }
         accountSelector.setAdapter(adapter);
 
