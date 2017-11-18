@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.Popup;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.AccountDAO;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.exception.InvalidAccountException;
 import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Account;
@@ -23,7 +24,7 @@ import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.Account;
 
 public class PersistentAccountDAO extends SQLiteOpenHelper implements AccountDAO {
     //version number to upgrade database version
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
     // Database Name
     private static final String DATABASE_NAME = "150600L.db";
@@ -35,16 +36,27 @@ public class PersistentAccountDAO extends SQLiteOpenHelper implements AccountDAO
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTableAccounts = "CREATE TABLE accounts (accNo text primary key, bankName text, accHolderName text, balance float)";
-
-        db.execSQL(createTableAccounts);
+        try {
+            String createTableAccounts = "CREATE TABLE accounts (accNo text primary key, bankName text, accHolderName text, balance float)";
+            db.execSQL(createTableAccounts);
+            Popup.printMsg("table: account,  created");
+        } catch (SQLiteException ee) {
+            Popup.printMsg("Table already exists");
+        }
+//        String createTableTransactions = "CREATE TABLE transactions (accNo text primary key, expenseType varchar(8), amount double, date datetime)";
+//        db.execSQL(createTableTransactions);
+//        Popup.printMsg("table: transactions,  created");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-// Drop older table if existed, all data will be gone!!!
-        db.execSQL("DROP TABLE IF EXISTS accounts");
+        // Drop older table if existed, all data will be gone!!!
+        try{
+            db.execSQL("DROP TABLE IF EXISTS accounts");
+        }
+        catch (SQLiteException ee){
 
+        }
         // Create tables again
         onCreate(db);
     }
@@ -112,9 +124,11 @@ public class PersistentAccountDAO extends SQLiteOpenHelper implements AccountDAO
         //ContentValues values = new ContentValues();
         try {
             db.execSQL("insert into accounts values('" + account.getAccountNo() + "','" + account.getBankName() + "','" + account.getAccountHolderName() + "'," + account.getBalance() + ");");
+            Popup.printMsg("account inserted");
         } catch (SQLiteException ee) {
-
+            Popup.printMsg(ee.toString());
         }
+
     }
 
     @Override

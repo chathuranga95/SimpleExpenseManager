@@ -16,6 +16,7 @@
 
 package lk.ac.mrt.cse.dbs.simpleexpensemanager.ui;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -30,6 +31,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,18 +75,13 @@ public class ManageExpensesFragment extends Fragment implements View.OnClickList
 
         amount = (EditText) rootView.findViewById(R.id.amount);
         accountSelector = (Spinner) rootView.findViewById(R.id.account_selector);
-        currentExpenseManager = (ExpenseManager) getArguments().get(EXPENSE_MANAGER);
+        currentExpenseManager = (ExpenseManager)getArguments().get(EXPENSE_MANAGER);
         ArrayAdapter<String> adapter =  null;
-        if (currentExpenseManager == null) {
-            ArrayList<String> accList = new ArrayList<>();
+        if (currentExpenseManager != null) {
             PersistentAccountDAO obj = new PersistentAccountDAO(MyApplication.getAppContext());
-
-            accList.add("123456AA");
-            accList.add("123456BB");
             adapter = new ArrayAdapter<>(this.getActivity(), R.layout.support_simple_spinner_dropdown_item,
-                  //  accList);
-                  //currentExpenseManager.getAccountNumbersList());
-            obj.getAccountNumbersList());
+                  currentExpenseManager.getAccountNumbersList());
+                  //  (ArrayList<String>)obj.getAccountNumbersList());
         }
         accountSelector.setAdapter(adapter);
 
@@ -115,8 +112,7 @@ public class ManageExpensesFragment extends Fragment implements View.OnClickList
 
                 if (currentExpenseManager != null) {
                     try {
-                        currentExpenseManager.updateAccountBalance(selectedAccount, day, month, year,
-                                ExpenseType.valueOf(type.toUpperCase()), amountStr);
+                        currentExpenseManager.updateAccountBalance(selectedAccount, day, month, year, ExpenseType.valueOf(type.toUpperCase()), amountStr);
                     } catch (InvalidAccountException e) {
                         new AlertDialog.Builder(this.getActivity())
                                 .setTitle(this.getString(R.string.msg_account_update_unable) + selectedAccount)
